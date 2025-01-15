@@ -1,24 +1,11 @@
 import psutil
 import PySimpleGUI as sg
-import sqlite3
 import time
+from database import create_tables, insert_data, return_data, get_db_connection
 
-# Подключение к базе данных
-conn = sqlite3.connect('my_database.db', check_same_thread=False)  # Разрешаем использование в многопоточном режиме
-cursor = conn.cursor()
-
-# Создание таблицы
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS notes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    cpu TEXT NOT NULL,
-    ram_av TEXT NOT NULL,
-    ram_tot TEXT NOT NULL,
-    disk_av TEXT NOT NULL,
-    disk_tot TEXT NOT NULL
-)
-''')
-conn.commit()
+conn = get_db_connection()
+create_tables(conn)
+conn.close()
 
 # Переменная булевая, благодаря которой осуществляется запись
 recording = False
@@ -35,7 +22,6 @@ def get_parameters():
     # Уровень нагруженности ПЗУ
     disk_av = round(psutil.disk_usage('/').free / (1024 ** 3), 2)  # доступно
     disk_tot = round(psutil.disk_usage('/').total / (1024 ** 3), 2)  # всего
-
     return cpu, ram_av, ram_tot, disk_av, disk_tot
 
 # Обновление данных в основном окне
@@ -57,15 +43,16 @@ def update_main(window):
         window['-TIMER-'].update("Запись: 0 сек")
 
     if recording:  # Если включена запись, то записываем в БД
-        cursor.execute('INSERT INTO notes (cpu, ram_av, ram_tot, disk_av, disk_tot) VALUES (?, ?, ?, ?, ?)',
-                       (str(r[0]), str(r[1]), str(r[2]), str(r[3]), str(r[4])))
-        conn.commit()
+        conn = get_db_connection()
+        insert_data(conn, str(r[0]), str(r[1]), str(r[2]), str(r[3]), str(r[4]))
+        conn.close()
 
 # Обновление данных во втором окне
 def update_sec(window):
     # Выборка с условием
-    cursor.execute('SELECT * FROM notes')
-    rows = cursor.fetchall()
+    conn = get_db_connection()
+    rows = return_data(conn)
+    conn.close()
     window['-TABLE-'].update(values=rows)
 
 # Создание основного окна
@@ -84,10 +71,11 @@ def create_main_window():
 
 # Создание второго окна
 def create_second_window():
-    cursor.execute('SELECT * FROM notes')
-    rows = cursor.fetchall()
+    conn = get_db_connection()
+    rows = return_data(conn)
+    conn.close()
     # Заголовки столбцов
-    headers = ["ID", "CPU", "RAM Available", "RAM Total", "Disk Available", "Disk Total", "Timestamp"]
+    headers = ["ID", "CPU", "RAM Available", "RAM Total", "Disk Available", "Disk Total"]
     # Создаем таблицу
     layout = [
         [sg.Table(values=rows, headings=headers, auto_size_columns=True,
@@ -139,7 +127,6 @@ def main():
     main_window.close()
     if second_window is not None:  # Проверяем, что second_window не равно None
         second_window.close()
-    conn.close()
 
 if __name__ == "__main__":
     main()
