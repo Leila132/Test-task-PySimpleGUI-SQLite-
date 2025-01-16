@@ -31,5 +31,7 @@ jobs:
 
       # Шаг 4: Запустить тесты
       - name: Run tests
+        env:
+          PYTHONPATH: /home/runner/work/Test-task-PySimpleGUI-SQLite-/Test-task-PySimpleGUI-SQLite-
         run: |
           pytest tests/
