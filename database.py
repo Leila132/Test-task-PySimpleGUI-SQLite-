@@ -1,6 +1,5 @@
 import sqlite3
 
-
 # Подключение к базе данных
 def get_db_connection():
     conn = sqlite3.connect('my_database.db', check_same_thread=False)

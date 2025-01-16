@@ -1,4 +1,3 @@
-import pytest
 from main import get_parameters, update_main, update_sec
 from unittest.mock import MagicMock
 

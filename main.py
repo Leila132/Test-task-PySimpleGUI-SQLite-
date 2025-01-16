@@ -67,7 +67,7 @@ def create_main_window():
         [sg.Button('Остановить запись', enable_events=True, key='-FUNCTION-2', font='Helvetica 14', size=(15, 1), visible=False)],
         [sg.Button("Посмотреть БД", key="-OPEN-", font='Helvetica 14', size=(15, 1))],
     ]
-    return sg.Window("Основное окно", layout, finalize=True)
+    return sg.Window("Мониторинг системы", layout, finalize=True)
 
 # Создание второго окна
 def create_second_window():
