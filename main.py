@@ -1,5 +1,4 @@
 import psutil
-import PySimpleGUI as sg
 import time
 from database import create_tables, insert_data, return_data, get_db_connection
 
@@ -57,6 +56,7 @@ def update_sec(window):
 
 # Создание основного окна
 def create_main_window():
+    import PySimpleGUI as sg
     layout = [
         [sg.Text('Мониторинг системы', font=('Helvetica', 20), justification='center')],
         [sg.Text('ЦП:', size=(20, 1), key='-text-1', font='Helvetica 14')],
@@ -71,6 +71,7 @@ def create_main_window():
 
 # Создание второго окна
 def create_second_window():
+    import PySimpleGUI as sg
     conn = get_db_connection()
     rows = return_data(conn)
     conn.close()
@@ -86,7 +87,8 @@ def create_second_window():
 # Основная функция
 def main():
     global recording, start_time
-
+    import PySimpleGUI as sg
+    
     main_window = create_main_window()
     second_window = None
 
