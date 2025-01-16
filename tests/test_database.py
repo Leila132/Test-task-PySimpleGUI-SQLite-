@@ -1,6 +1,5 @@
 import sqlite3
 from database import get_db_connection, create_tables, insert_data, return_data
-from conftest import db_connection
 
 def test_get_db_connection(db_connection):
     conn = get_db_connection()
